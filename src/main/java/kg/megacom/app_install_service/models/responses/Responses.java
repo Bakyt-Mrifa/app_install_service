@@ -18,31 +18,31 @@ public class Responses {
     }
 
 
-    public static Responses error(){
+    public static Responses recipientList(){
         return Responses.builder()
                 .status(2)
-                .message("Ошибка сохраниения в базу данных!!!")
+                .message("История получателя!")
                 .build();
     }
 
-    public static Responses exist(){
+    public static Responses userDoesntExist(){
         return Responses.builder()
                 .status(3)
-                .message("Объект не существует!")
+                .message("Пользователь не найден")
                 .build();
     }
 
-    public static Responses save(){
+    public static Responses senderSubsId(){
         return Responses.builder()
                 .status(4)
-                .message("Успешно сохранено!")
+                .message("Успешно! SubsID отправителя")
                 .build();
     }
 
-    public static Responses update(){
+    public static Responses cancelled(){
         return Responses.builder()
                 .status(5)
-                .message("Успешно обновлено!")
+                .message("STATUS CANCELLED!!")
                 .build();
     }
 
@@ -53,23 +53,23 @@ public class Responses {
                 .build();
     }
 
-    public static Responses empty(){
+    public static Responses listEmpty(){
         return Responses.builder()
                 .status(7)
                 .message("Список пуст")
                 .build();
     }
 
-    public static Responses operationSuccess(){
+    public static Responses linkSendSuccsess(){
         return Responses.builder()
                 .status(8)
-                .message("Операция проведена успешно")
+                .message("Ссылка успешно отправлена!")
                 .build();
     }
     public static Responses thankYou(){
         return Responses.builder()
                 .status(9)
-                .message("Спасибо за покупку")
+                .message("Благодарим за пользование нашим операторм связи!")
                 .build();
     }
 
