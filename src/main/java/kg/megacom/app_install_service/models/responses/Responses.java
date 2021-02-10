@@ -42,14 +42,14 @@ public class Responses {
     public static Responses cancelled(){
         return Responses.builder()
                 .status(5)
-                .message("STATUS CANCELLED!!")
+                .message("STATUS CANCELLED!")
                 .build();
     }
 
-    public static Responses delete(){
+    public static Responses userIsBusy(){
         return Responses.builder()
                 .status(6)
-                .message("Успешно удалено")
+                .message("Пользователь уже скачал это прилажение!")
                 .build();
     }
 

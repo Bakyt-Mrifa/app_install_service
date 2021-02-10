@@ -28,6 +28,6 @@ public class AppInstallController {
 
     @GetMapping(value = "getAll")
     public Responses getAllByRecipientSubsId(@RequestParam Long recipientSubsId){
-        return inviteServices.getRecipiendHistory(recipientSubsId);
+        return inviteServices.getRecipientHistory(recipientSubsId);
     }
 }

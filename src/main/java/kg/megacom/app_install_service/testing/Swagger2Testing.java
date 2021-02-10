@@ -26,7 +26,7 @@ public class Swagger2Testing {
 
     private ApiInfo apiEndPointsInfo() {
         return new ApiInfoBuilder().title("App install invite Service - REST API")
-                .description("Приглашение на устанвоку приложения - REST API")
+                .description("Приглашение на устанвоку прилажения - API")
                 .contact(new Contact("Bakyt", "http://lockalHost", "bakyt.customs@gmail.com"))
                 .license("Apache 2.0")
                 .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")

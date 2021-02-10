@@ -17,7 +17,7 @@ public class StatusEvents {
     private Long id;
     private Long senderSubsId;
     private Long recipientSubsId;
-    private Date eventData;
+    private Date eventDate;
     @Enumerated(EnumType.STRING)
     private Status status;
 
