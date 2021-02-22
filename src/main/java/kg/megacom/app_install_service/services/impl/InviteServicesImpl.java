@@ -18,11 +18,12 @@ import java.util.Map;
 @Service
 public class InviteServicesImpl implements InviteServices {
     private Responses responses;
-    Map<String, Object> map = new HashMap<>();
+    Map<String, String> map = new HashMap<>();
+    Map<String, Object> mapObject = new HashMap<>();
     @Autowired
     private EventRepository eventRepository;
 
-    @Override
+   /* @Override
     public Responses inviteUser(Long senderSubsId, Long recipientSubsId) {
         responses = Responses.linkSendSuccsess();
         List<StatusEvents> recipientHistories = eventRepository.findByRecipientSubsId(recipientSubsId);
@@ -36,8 +37,6 @@ public class InviteServicesImpl implements InviteServices {
             statusCancelled.setStatus(Status.CANCELLED);
             eventRepository.save(statusCancelled);
         }
-
-
         if (recipientHistories.size() > 1) {
             StatusEvents statusCancelled = recipientHistories.get(recipientHistories.size() - 1);
             if (statusCancelled.getStatus().equals(Status.SUCCSESS)) {
@@ -47,30 +46,24 @@ public class InviteServicesImpl implements InviteServices {
             statusCancelled.setStatus(Status.CANCELLED);
             eventRepository.save(statusCancelled);
         }
-
-
         saveRecipient(senderSubsId, recipientSubsId);
-
         return responses;
     }
-
+*/
     @Override
-    public Responses getSenderSubsId(Long recipientSubsId) {
-        List<StatusEvents> recipientHistories = eventRepository.findByRecipientSubsId(recipientSubsId);
-        if (recipientHistories.size() == 0) {
-            responses = Responses.userDoesntExist();
-            return responses;
+    public ResponseEntity<?> getSenderSubsId(Long recipientSubsId) {
+        StatusEvents lastRecipient = eventRepository.getLastEvent(recipientSubsId);
+        if (lastRecipient == null) {
+            map.put("error","user not found");
+            return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
         }
-        if (recipientHistories.size() >= 1) {
-            StatusEvents statusEvents = recipientHistories.get(recipientHistories.size() - 1);
-            Long senderSubsId = statusEvents.getSenderSubsId();
-            statusEvents.setEventDate(new Date());
-            statusEvents.setStatus(Status.SUCCSESS);
-            eventRepository.save(statusEvents);
-            responses = Responses.senderSubsId();
-            responses.setObject(senderSubsId);
-        }
-        return responses;
+
+            Long senderSubsId = lastRecipient.getSenderSubsId();
+            lastRecipient.setEventDate(new Date());
+            lastRecipient.setStatus(Status.SUCCSESS);
+            eventRepository.save(lastRecipient);
+            mapObject.put("success", senderSubsId);
+            return new ResponseEntity<>(mapObject, HttpStatus.OK);
     }
 
     @Override
@@ -91,62 +84,46 @@ public class InviteServicesImpl implements InviteServices {
     public ResponseEntity<?> invite(Long senderSubsId, Long recipientSubsId) {
         StatusEvents lastRecipient = eventRepository.getLastEvent(recipientSubsId);
 
+//create and save new recipient
         if (lastRecipient == null) {
-           return saveRecipient(senderSubsId,recipientSubsId);
+            mapObject.put("success", saveRecipient(senderSubsId,recipientSubsId));
+            return new ResponseEntity<>(mapObject, HttpStatus.ACCEPTED);
         }
+
+//verification - has the recipient already download the app?
         if (lastRecipient.getStatus().equals(Status.SUCCSESS)) {
-
-            map.put("message","The recipient has already downloaded the application!");
-            return new ResponseEntity<>(map, HttpStatus.FORBIDDEN);
+             map.put("error","The recipient has already downloaded the application!");
+            return new ResponseEntity<>(map, HttpStatus.NOT_ACCEPTABLE);
         }
-        if ((lastRecipient.getStatus().equals(Status.OPEN))) {
+
+//change status "OPEN" to "CANCELLED"
+       if (lastRecipient.getStatus().equals(Status.OPEN)) {
+           System.out.println(lastRecipient.getSenderSubsId() +": from DB - sender: "+senderSubsId);
+
+//verification - has the sender already sent the link?
             if (lastRecipient.getSenderSubsId().equals(senderSubsId)) {
-                map.put("message","The sender has already sent the link to the current recipient");
-                return new ResponseEntity<>(map, HttpStatus.FORBIDDEN);
+                map.put("error","The sender has already sent the link to the current recipient");
+                return new ResponseEntity<>(map, HttpStatus.ALREADY_REPORTED);
             }
             lastRecipient.setEventDate(new Date());
             lastRecipient.setStatus(Status.CANCELLED);
             eventRepository.save(lastRecipient);
-            return saveRecipient(senderSubsId, recipientSubsId);
+            mapObject.put("success", saveRecipient(senderSubsId,recipientSubsId));
+            return new ResponseEntity<>(mapObject, HttpStatus.ACCEPTED);
         }
 
-        map.put("message", "unexpected error!");
-        return new ResponseEntity<>("error", HttpStatus.FORBIDDEN);
-
-
-    }
-
-    @Override
-    public Object userInvite(Long senderSubsId, Long recipientSubsId) {
-        StatusEvents lastRecipient = eventRepository.getLastEvent(recipientSubsId);
-        if (lastRecipient == null) {
-
-            return saveRecipient(senderSubsId, recipientSubsId);
-        }
-        if ((lastRecipient.getStatus().equals(Status.OPEN))) {
-            if (lastRecipient.getSenderSubsId() == senderSubsId) {
-                return "exist";
-            }
-            lastRecipient.setEventDate(new Date());
-            lastRecipient.setStatus(Status.CANCELLED);
-            eventRepository.save(lastRecipient);
-            return saveRecipient(senderSubsId, recipientSubsId);
-        }
-        return null;
+        map.put("error", "unexpected error! + + +");
+        return new ResponseEntity<>(map, HttpStatus.UNPROCESSABLE_ENTITY);
     }
 
 
-    private ResponseEntity<?> saveRecipient(Long senderSubsId, Long recipientSubsId) {
-
-
+    private StatusEvents saveRecipient(Long senderSubsId, Long recipientSubsId) {
         StatusEvents newRecipient = new StatusEvents();
         newRecipient.setEventDate(new Date());
         newRecipient.setRecipientSubsId(recipientSubsId);
         newRecipient.setSenderSubsId(senderSubsId);
         newRecipient.setStatus(Status.OPEN);
         eventRepository.save(newRecipient);
-        map.put("message", "Успешно");
-        map.put("result", newRecipient);
-        return new ResponseEntity<>(map, HttpStatus.OK);
+        return newRecipient;
     }
 }

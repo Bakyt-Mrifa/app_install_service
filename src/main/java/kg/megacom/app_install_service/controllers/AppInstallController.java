@@ -20,32 +20,29 @@ public class AppInstallController {
     @Autowired
     private InviteServices inviteServices;
 
-  /*  @PostMapping(value = "invite")
-    public Responses inviteUser (@RequestParam Long senderSubsId, @RequestParam Long recipientSubsId){
-
-        return inviteServices.inviteUser(senderSubsId, recipientSubsId);
-    }*/
     @PostMapping(value = "inviteUser")
     public ResponseEntity<?> invite(@RequestParam Long senderSubsId, @RequestParam Long recipientSubsId){
         try {
-
             return inviteServices.invite(senderSubsId, recipientSubsId);
 
         }catch (Exception ex){
             Map<String, String> map = new HashMap<>();
+            map.put("it's very bad request!!!", ex.getMessage());
             map.put("error", ex.getMessage());
             return new ResponseEntity<>(map, HttpStatus.FORBIDDEN);
         }
     }
-
-
     @GetMapping (value = "getSender")
-    public Responses getSenderSubsId (@RequestParam Long recipientSubsId){
+    public ResponseEntity<?> getSenderSubsId (@RequestParam Long recipientSubsId){
         return inviteServices.getSenderSubsId(recipientSubsId);
     }
-
     @GetMapping(value = "getAll")
     public Responses getAllByRecipientSubsId(@RequestParam Long recipientSubsId){
         return inviteServices.getRecipientHistory(recipientSubsId);
     }
+      /*  @PostMapping(value = "invite")
+    public Responses inviteUser (@RequestParam Long senderSubsId, @RequestParam Long recipientSubsId){
+
+        return inviteServices.inviteUser(senderSubsId, recipientSubsId);
+    }*/
 }
