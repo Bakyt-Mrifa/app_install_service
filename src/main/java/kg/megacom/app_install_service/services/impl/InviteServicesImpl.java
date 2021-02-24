@@ -23,33 +23,6 @@ public class InviteServicesImpl implements InviteServices {
     @Autowired
     private EventRepository eventRepository;
 
-   /* @Override
-    public Responses inviteUser(Long senderSubsId, Long recipientSubsId) {
-        responses = Responses.linkSendSuccsess();
-        List<StatusEvents> recipientHistories = eventRepository.findByRecipientSubsId(recipientSubsId);
-
-        if (recipientHistories.size() == 1) {
-            StatusEvents statusCancelled = recipientHistories.get(0);
-            if (statusCancelled.getStatus().equals(Status.SUCCSESS)) {
-                return responses = Responses.userIsBusy();
-            }
-            statusCancelled.setEventDate(new Date());
-            statusCancelled.setStatus(Status.CANCELLED);
-            eventRepository.save(statusCancelled);
-        }
-        if (recipientHistories.size() > 1) {
-            StatusEvents statusCancelled = recipientHistories.get(recipientHistories.size() - 1);
-            if (statusCancelled.getStatus().equals(Status.SUCCSESS)) {
-                return responses = Responses.userIsBusy();
-            }
-            statusCancelled.setEventDate(new Date());
-            statusCancelled.setStatus(Status.CANCELLED);
-            eventRepository.save(statusCancelled);
-        }
-        saveRecipient(senderSubsId, recipientSubsId);
-        return responses;
-    }
-*/
     @Override
     public ResponseEntity<?> getSenderSubsId(Long recipientSubsId) {
         StatusEvents lastRecipient = eventRepository.getLastEvent(recipientSubsId);
