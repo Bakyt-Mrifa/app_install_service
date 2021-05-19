@@ -30,7 +30,10 @@ public class InviteServicesImpl implements InviteServices {
             map.put("error","user not found");
             return new ResponseEntity<>(map, HttpStatus.NOT_FOUND);
         }
-
+        if (lastRecipient.getStatus().equals(Status.SUCCSESS)) {
+            map.put("error","The recipient has already downloaded the application!");
+            return new ResponseEntity<>(map, HttpStatus.NOT_ACCEPTABLE);
+        }
             Long senderSubsId = lastRecipient.getSenderSubsId();
             lastRecipient.setEventDate(new Date());
             lastRecipient.setStatus(Status.SUCCSESS);
